@@ -73,12 +73,12 @@ namespace dotnet_api.Controllers.v1
             return Ok("User deleted");
         }
 
-        [HttpPost("updateUser")]
+        [HttpPost("updateUserGeneralInfo")]
         public IActionResult UpdateUser(User user)
         {
             try
             {
-                _userService.UpdateUser(user);
+                _userService.UpdateUserGeneralInfo(user);
             } catch (Exception e)
             {
                 return NotFound("No specific user founded");

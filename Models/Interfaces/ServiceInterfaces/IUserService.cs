@@ -5,7 +5,8 @@ public interface IUserService
     public User? GetUserByEmail(string email);
     public void CreateUser(User user);
     public void DeleteUser(User user);
-    public void UpdateUser(User user);
+    public void UpdateUserGeneralInfo(User user);
+    public void UpdateUserPassword(User user);
 
 }
 

@@ -70,20 +70,32 @@ namespace dotnet_api.Services.ModelServices
             }
         }
 
-        public void UpdateUser(User user)
+        public void UpdateUserGeneralInfo(User user)
         {
-            var updatedUser = _context.Users.FirstOrDefault(u => u.UserId == user.UserId);
-            if (updatedUser  != null)
+            var updatedUser = _context.Users.FirstOrDefault(u => u != null && u.UserId == user.UserId);
+            if (updatedUser != null)
             {
                 updatedUser.UserName = user.UserName;
                 updatedUser.Email = user.Email;
-                updatedUser.Password = user.Password;
                 updatedUser.UsingProducts = user.UsingProducts;
                 _context.SaveChanges();
             }
             else
             {
                 throw new Exception("No User founded!");
+            }
+        }
+
+        public void UpdateUserPassword(int userId, string userEncryptedPassword)
+        {
+            var user = _context.Users.FirstOrDefault(u => u != null && u.UserId == userId);
+            if (user != null)
+            {
+                user.Password = userEncryptedPassword;
+            }
+            else
+            {
+                throw new Exception("No User Founded!");
             }
         }
     }
