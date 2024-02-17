@@ -47,10 +47,43 @@ namespace dotnet_api.Services.ModelServices
                 {
                     _context.Users.Add(user);
                     _context.SaveChanges();
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
 
                 }
+            }
+        }
+
+        public void DeleteUser(User user)
+        {
+            try
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+
+            }
+            catch (Exception e)
+            {
+
+
+            }
+        }
+
+        public void UpdateUser(User user)
+        {
+            var updatedUser = _context.Users.FirstOrDefault(u => u.UserId == user.UserId);
+            if (updatedUser  != null)
+            {
+                updatedUser.UserName = user.UserName;
+                updatedUser.Email = user.Email;
+                updatedUser.Password = user.Password;
+                updatedUser.UsingProducts = user.UsingProducts;
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new Exception("No User founded!");
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using dotnet_api.Models.Interfaces; 
+using dotnet_api.Models.Interfaces;
 using dotnet_api.Services.ModelServices;
 using dotnet_api.Services.SecurityService;
 
@@ -53,12 +53,37 @@ namespace dotnet_api.Controllers.v1
             {
                 return Unauthorized(new { message = "Provided email or password is incorrect" });
             }
-            string EncryptedPassword = (_encryptionService.GetHashSha256(user.Password + checkedUser.Salt)); 
+            string EncryptedPassword = (_encryptionService.GetHashSha256(user.Password + checkedUser.Salt));
             if (EncryptedPassword != checkedUser.Password)
             {
-                return Unauthorized(new {message = "Provided email or password is incorrect"});
+                return Unauthorized(new { message = "Provided email or password is incorrect" });
             }
             return Ok(new { message = "Succesful Authentication" });
+        }
+
+        [HttpDelete("deleteUser{id}")]
+        public IActionResult DeleteUser(int id)
+        {
+            User? user = _userService.GetUserById(id);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            _userService.DeleteUser(user);
+            return Ok("User deleted");
+        }
+
+        [HttpPost("updateUser")]
+        public IActionResult UpdateUser(User user)
+        {
+            try
+            {
+                _userService.UpdateUser(user);
+            } catch (Exception e)
+            {
+                return NotFound("No specific user founded");
+            }
+            return Ok("Success updating user");
         }
     }
 }
