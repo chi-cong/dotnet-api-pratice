@@ -6,7 +6,7 @@ public interface IUserService
     public void CreateUser(User user);
     public void DeleteUser(User user);
     public void UpdateUserGeneralInfo(User user);
-    public void UpdateUserPassword(User user);
+    public void UpdateUserPassword(int userId, string encryptedPassword);
 
 }
 

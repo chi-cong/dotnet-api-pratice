@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using dotnet_api.Models.Interfaces;
 
 namespace dotnet_api.Services.SecurityService;
@@ -29,10 +30,15 @@ public class EncryptionService : IEncryptionService
         return salt;
     }
 
-    public string GetHashSha256(string input)
+    public string HashPassword(string plaintext, string salt)
     {
-        byte[] originalStringByte = Encoding.UTF8.GetBytes(input);
-        byte[] hashedResult = SHA256.HashData(originalStringByte);
-        return Convert.ToBase64String(hashedResult);
+
+        return Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            password: plaintext, salt: Convert.FromBase64String(salt), iterationCount: 9999, numBytesRequested : 256 / 8, prf: KeyDerivationPrf.HMACSHA256));
+    }
+
+    public bool VerifyHash(string hashedString, string plaintext, string salt)
+    {
+        return hashedString == HashPassword(plaintext, salt);
     }
 }

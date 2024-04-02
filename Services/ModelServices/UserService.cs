@@ -50,7 +50,7 @@ namespace dotnet_api.Services.ModelServices
                 }
                 catch (Exception e)
                 {
-
+                    throw new Exception($"Failed to create user. Exception : {e}");
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace dotnet_api.Services.ModelServices
             }
             catch (Exception e)
             {
-
+                throw new Exception($"Failed to delete user. Exception : {e}");
 
             }
         }
@@ -86,12 +86,13 @@ namespace dotnet_api.Services.ModelServices
             }
         }
 
-        public void UpdateUserPassword(int userId, string userEncryptedPassword)
+        public void UpdateUserPassword(int userId, string encryptedPassword)
         {
             var user = _context.Users.FirstOrDefault(u => u != null && u.UserId == userId);
             if (user != null)
             {
-                user.Password = userEncryptedPassword;
+                user.Password = encryptedPassword;
+                _context.SaveChanges();
             }
             else
             {

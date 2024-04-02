@@ -34,9 +34,12 @@ namespace dotnet_api.Migrations
 
                     b.Property<string>("ProductName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ProductId");
+
+                    b.HasIndex("ProductName")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });
@@ -66,7 +69,7 @@ namespace dotnet_api.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -78,9 +81,12 @@ namespace dotnet_api.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email", "UserName")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using dotnet_api.Models.Interfaces;
 using dotnet_api.Services.ModelServices;
 using dotnet_api.Services.SecurityService;
+using dotnet_api.Models.Dtos.UserDtos;
 
 namespace dotnet_api.Controllers.v1
 {
@@ -20,6 +21,7 @@ namespace dotnet_api.Controllers.v1
             _encryptionService = encryptionService;
         }
 
+        //[Authorize]
         [HttpGet("{id}")]
         public ActionResult<User?> GetUserById(int id)
         {
@@ -33,28 +35,29 @@ namespace dotnet_api.Controllers.v1
 
 
         [HttpPost("createUser")]
-        public IActionResult CreateUser(User user)
+        public IActionResult CreateUser([FromBody]UserDtoCreate createdUser)
         {
+            User user = new User() {UserName = createdUser.UserName ,Email = createdUser.Email};
             if (_userService.GetUserByEmail(user.Email) == null)
             {
                 user.Salt = _encryptionService.GenerateSalt();
-                user.Password = _encryptionService.GetHashSha256(user.Password + user.Salt);
+                user.Password = _encryptionService.HashPassword(createdUser.Password, user.Salt);
                 _userService.CreateUser(user);
                 return CreatedAtAction(nameof(CreateUser), user);
             }
             return Unauthorized();
         }
 
-        [HttpPost("checkUserPassWord")]
-        public IActionResult CheckUserPassword(User user)
+        [HttpPost("login")]
+        public IActionResult CheckUserPassword([FromBody]UserDtoLogin attemptingUser)
         {
-            User? checkedUser = _userService.GetUserByEmail(user.Email);
+            User? checkedUser = _userService.GetUserByEmail(attemptingUser.UserNameEmail);
             if (checkedUser == null)
             {
                 return Unauthorized(new { message = "Provided email or password is incorrect" });
             }
-            string EncryptedPassword = (_encryptionService.GetHashSha256(user.Password + checkedUser.Salt));
-            if (EncryptedPassword != checkedUser.Password)
+            bool isValidPassword = _encryptionService.VerifyHash(checkedUser.Password, attemptingUser.Password, checkedUser.Salt);
+            if (!isValidPassword)
             {
                 return Unauthorized(new { message = "Provided email or password is incorrect" });
             }
@@ -74,7 +77,7 @@ namespace dotnet_api.Controllers.v1
         }
 
         [HttpPost("updateUserGeneralInfo")]
-        public IActionResult UpdateUser(User user)
+        public IActionResult UpdateUser([FromBody]User user)
         {
             try
             {
